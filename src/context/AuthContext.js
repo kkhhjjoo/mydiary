@@ -7,6 +7,8 @@ const authReducer = (state, action) => {
     switch(action.type) {
         case 'login':
             return {...state, user: action.payload}
+        case 'logout':
+            return {...state, user: null}    
         // 예시: 로그인/로그아웃 등 추가 가능
         default:
             return state;
