@@ -1,10 +1,13 @@
 import styles from './Home.module.css';
 import DiaryForm from './DiaryForm';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import { useCollection } from '../../hooks/useCollection';
+import DiaryList from './DiaryList';
 
 export default function Home() {
 
     const {user} = useAuthContext();
+    const {documents, error} = useCollection('diary');
 
     return (
             <main className={styles.cont}> 
@@ -12,8 +15,9 @@ export default function Home() {
                     <DiaryForm uid={user.uid} />
                 </aside>
                 <ul className={styles.content_list}>
-                diary list
-            </ul>
+                    {error && <strong>{error}</strong>}
+                    {documents && <DiaryList diaries={documents} />}
+                </ul>
             </main>
     )
 }
