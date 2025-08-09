@@ -1,4 +1,4 @@
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import { useReducer } from 'react'
 import { appFireStore, timestamp } from '../firebase/config';
 
@@ -16,7 +16,9 @@ const storeReducer = (state, action) => {
         case 'addDoc':
             return {isPending: false, document: action.payload, success: true, error: null}
         case 'error':
-            return {isPending: false, document: null, success: false, error: action.payload}    
+            return {isPending: false, document: null, success: false, error: action.payload}
+        case 'deleteDoc':
+            return {isPending: false, document: null, success: true, error: null}
         default:
             return state;
     }
@@ -24,12 +26,12 @@ const storeReducer = (state, action) => {
 
 //저장할 컬랙션을 인자로 전달합니다.
 export const useFirestore = (transaction) => {
-
+    
     const [response, dispatch] = useReducer(storeReducer, initState);
-
+    
     //colRef : 컬렉션의 참조를 요구합니다
     const colRef = collection(appFireStore, transaction);
-
+    
     //컬랙션에 문서를 추가합니다
     const addDocument = async (doc) => {
         dispatch({type: "isPending"})
@@ -42,11 +44,18 @@ export const useFirestore = (transaction) => {
             dispatch({type: "error", payload: error.message})
         }
     }
-
+    
     //컬랙션에서 문서를 제거합니다
-    const deleteDocument = (id) => {
-        
+    const deleteDocument = async (id) => {
+        dispatch({type: "isPending"})
+        try {
+            const docRef = doc(appFireStore, transaction, id);
+            await deleteDoc(docRef);
+            dispatch({type: "deleteDoc", payload: docRef})
+        }catch (error) {
+            dispatch({type: "error", payload: error.message})
+        }
     }
-
+    
     return {addDocument, deleteDocument, response}
 }
