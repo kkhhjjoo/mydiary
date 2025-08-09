@@ -8,3 +8,9 @@ body {
 ul {
   list-style-type: none;
 }
+* {
+  box-sizing: border-box;
+}
+button {
+  cursor: pointer;
+}
